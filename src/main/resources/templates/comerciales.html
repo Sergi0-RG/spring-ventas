@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Comerciales</title>
+<style>
+table { border-collapse: collapse; width: 90%; margin: 0 auto; }
+th, td { border: 1px solid #999; padding: 6px 10px; text-align: left; }
+th { background: #eee; }
+h1 { text-align: center; }
+</style>
+</head>
+<body>
+	<h1>Comerciales</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Id</th><th>Nombre</th><th>Apellido1</th><th>Apellido2</th><th>Comisión</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="comercial : ${listaComerciales}">
+				<td th:text="${comercial.id}">0</td>
+				<td th:text="${comercial.nombre}">nombre</td>
+				<td th:text="${comercial.apellido1}">apellido1</td>
+				<td th:text="${comercial.apellido2}">apellido2</td>
+				<td th:text="${comercial.comision}">comision</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>
