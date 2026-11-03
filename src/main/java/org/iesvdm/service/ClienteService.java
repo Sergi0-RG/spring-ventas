@@ -21,8 +21,10 @@ public class ClienteService {
 		return clienteDAO.getAll();
 	}
 
-	public Optional<Cliente> one(int id) {
-		return clienteDAO.find(id);
+	/** Devuelve el cliente o null si no existe. */
+	public Cliente one(int id) {
+		Optional<Cliente> opt = clienteDAO.find(id);
+		return opt.orElse(null);
 	}
 
 	public void newCliente(Cliente cliente) {

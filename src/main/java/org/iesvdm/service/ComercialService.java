@@ -21,8 +21,10 @@ public class ComercialService {
 		return comercialDAO.getAll();
 	}
 
-	public Optional<Comercial> one(int id) {
-		return comercialDAO.find(id);
+	/** Devuelve el comercial o null si no existe. */
+	public Comercial one(int id) {
+		Optional<Comercial> opt = comercialDAO.find(id);
+		return opt.orElse(null);
 	}
 
 	public void newComercial(Comercial comercial) {
