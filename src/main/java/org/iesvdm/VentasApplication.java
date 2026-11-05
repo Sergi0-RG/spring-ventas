@@ -1,11 +1,15 @@
 package org.iesvdm;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.iesvdm.dao.ClienteDAO;
 import org.iesvdm.dao.ComercialDAO;
+import org.iesvdm.dao.PedidoDAO;
 import org.iesvdm.modelo.Cliente;
 import org.iesvdm.modelo.Comercial;
+import org.iesvdm.modelo.Pedido;
+import org.iesvdm.modelo.PedidoDetalle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +27,9 @@ public class VentasApplication implements CommandLineRunner {
 	@Autowired
 	private ComercialDAO comercialDAO;
 
+	@Autowired
+	private PedidoDAO pedidoDAO;
+
 	public static void main(String[] args) {
 		SpringApplication.run(VentasApplication.class, args);
 	}
@@ -33,6 +40,7 @@ public class VentasApplication implements CommandLineRunner {
 
 		pruebasClienteDAO();
 		pruebasComercialDAO();
+		pruebasPedidoDAO();
 	}
 
 	private void pruebasClienteDAO() {
@@ -120,6 +128,37 @@ public class VentasApplication implements CommandLineRunner {
 		log.info("Comercial {} tras delete: {}", nuevo.getId(), comercialDAO.find(nuevo.getId()));
 
 		log.info("Total comerciales tras pruebas: {}", comercialDAO.getAll().size());
+	}
+
+	private void pruebasPedidoDAO() {
+
+		log.info("*******************************");
+		log.info("*Prueba de arranque PedidoDAO*");
+		log.info("*******************************");
+
+		// listado con JOIN (nombres completos de cliente y comercial)
+		pedidoDAO.getAllDetalle().forEach(p -> log.info("PedidoDetalle: {}", p));
+
+		Optional<PedidoDetalle> detalle = pedidoDAO.findDetalle(1);
+		log.info("Detalle pedido 1: {}", detalle.orElse(null));
+		log.info("Detalle pedido 9999: {}", pedidoDAO.findDetalle(9999));
+
+		// create
+		Pedido nuevo = new Pedido(0, 99.95, LocalDate.of(2024, 1, 15), 1, 1);
+		pedidoDAO.create(nuevo);
+		log.info("Pedido creado con id {}: {}", nuevo.getId(), nuevo);
+
+		// update
+		nuevo.setTotal(120.50);
+		nuevo.setClienteId(4);
+		pedidoDAO.update(nuevo);
+		log.info("Pedido tras update: {}", pedidoDAO.findDetalle(nuevo.getId()).orElse(null));
+
+		// delete
+		pedidoDAO.delete(nuevo.getId());
+		log.info("Pedido {} tras delete: {}", nuevo.getId(), pedidoDAO.find(nuevo.getId()));
+
+		log.info("Total pedidos tras pruebas: {}", pedidoDAO.getAll().size());
 	}
 
 }
