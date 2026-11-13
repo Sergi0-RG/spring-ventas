@@ -10,6 +10,7 @@ import org.iesvdm.modelo.Pedido;
 import org.iesvdm.modelo.PedidoDetalle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -30,6 +31,16 @@ public class PedidoDAOImpl implements PedidoDAO {
 			JOIN cliente c ON p.id_cliente = c.id
 			JOIN comercial co ON p.id_comercial = co.id
 			""";
+
+	// Mapeo común de las consultas con JOIN
+	private static final RowMapper<PedidoDetalle> MAPPER_DETALLE = (rs, rowNum) -> new PedidoDetalle(
+			rs.getInt("id"),
+			rs.getDouble("total"),
+			rs.getObject("fecha", LocalDate.class),
+			rs.getInt("id_cliente"),
+			rs.getInt("id_comercial"),
+			rs.getString("cliente"),
+			rs.getString("comercial"));
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -131,13 +142,7 @@ public class PedidoDAOImpl implements PedidoDAO {
 
 		List<PedidoDetalle> lista = jdbcTemplate.query(
 				SQL_DETALLE + " ORDER BY p.id",
-				(rs, rowNum) -> new PedidoDetalle(rs.getInt("id"),
-						rs.getDouble("total"),
-						rs.getObject("fecha", LocalDate.class),
-						rs.getInt("id_cliente"),
-						rs.getInt("id_comercial"),
-						rs.getString("cliente"),
-						rs.getString("comercial")));
+				MAPPER_DETALLE);
 
 		log.info("Devueltos {} registros (detalle).", lista.size());
 
@@ -149,13 +154,7 @@ public class PedidoDAOImpl implements PedidoDAO {
 
 		List<PedidoDetalle> lista = jdbcTemplate.query(
 				SQL_DETALLE + " WHERE p.id = ?",
-				(rs, rowNum) -> new PedidoDetalle(rs.getInt("id"),
-						rs.getDouble("total"),
-						rs.getObject("fecha", LocalDate.class),
-						rs.getInt("id_cliente"),
-						rs.getInt("id_comercial"),
-						rs.getString("cliente"),
-						rs.getString("comercial")),
+				MAPPER_DETALLE,
 				id);
 
 		if (lista.isEmpty()) {
@@ -163,6 +162,34 @@ public class PedidoDAOImpl implements PedidoDAO {
 			return Optional.empty();
 		}
 		return Optional.of(lista.get(0));
+	}
+
+	/** Pedidos realizados por el comercial dado, con el nombre del cliente. */
+	@Override
+	public List<PedidoDetalle> getAllByComercial(int idComercial) {
+
+		List<PedidoDetalle> lista = jdbcTemplate.query(
+				SQL_DETALLE + " WHERE p.id_comercial = ? ORDER BY p.id",
+				MAPPER_DETALLE,
+				idComercial);
+
+		log.info("Devueltos {} pedidos del comercial {}.", lista.size(), idComercial);
+
+		return lista;
+	}
+
+	/** Pedidos realizados por el cliente dado, con el nombre del comercial. */
+	@Override
+	public List<PedidoDetalle> getAllByCliente(int idCliente) {
+
+		List<PedidoDetalle> lista = jdbcTemplate.query(
+				SQL_DETALLE + " WHERE p.id_cliente = ? ORDER BY p.id",
+				MAPPER_DETALLE,
+				idCliente);
+
+		log.info("Devueltos {} pedidos del cliente {}.", lista.size(), idCliente);
+
+		return lista;
 	}
 
 }

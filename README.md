@@ -1,4 +1,4 @@
-# Ventas 0.0.4
+# Ventas 0.0.5
 
 CRUD de clientes, comerciales y pedidos con Spring Boot, JdbcTemplate y Thymeleaf (grid de Bootstrap).
 

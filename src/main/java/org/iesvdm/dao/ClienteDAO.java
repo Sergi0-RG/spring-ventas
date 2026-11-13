@@ -17,4 +17,10 @@ public interface ClienteDAO {
 
 	public void delete(int id);
 
+	// Filtrado por ciudad
+	public List<Cliente> getAllByCiudad(String ciudad);
+
+	// Ciudades distintas (para el desplegable del filtro)
+	public List<String> getCiudades();
+
 }

@@ -23,4 +23,9 @@ public interface PedidoDAO {
 
 	public Optional<PedidoDetalle> findDetalle(int id);
 
+	// Pedidos de un comercial / de un cliente (con los nombres de cliente y comercial)
+	public List<PedidoDetalle> getAllByComercial(int idComercial);
+
+	public List<PedidoDetalle> getAllByCliente(int idCliente);
+
 }

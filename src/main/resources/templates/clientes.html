@@ -30,6 +30,26 @@
 		</div>
 	</div>
 
+	<!-- Filtro por ciudad: GET /clientes?ciudad=... -->
+	<form class="row g-2 align-items-center border-bottom py-3" th:action="@{/clientes}" method="get">
+		<label class="col-auto col-form-label" for="ciudad">Filtrar por ciudad:</label>
+		<div class="col-auto">
+			<select class="form-select" id="ciudad" name="ciudad">
+				<option value="">Todas</option>
+				<option th:each="c : ${listaCiudades}" th:value="${c}" th:text="${c}"
+					th:selected="${c == ciudadSeleccionada}">Ciudad</option>
+			</select>
+		</div>
+		<div class="col-auto">
+			<button class="btn btn-primary" type="submit">Filtrar</button>
+			<a class="btn btn-outline-secondary" th:href="@{/clientes}">Quitar filtro</a>
+		</div>
+	</form>
+
+	<div th:if="${#lists.isEmpty(listaClientes)}" class="alert alert-info mt-3">
+		No hay clientes que mostrar.
+	</div>
+
 	<div class="row fw-bold border-bottom py-2">
 		<div class="col-1">Id</div>
 		<div class="col-2">Nombre</div>

@@ -56,6 +56,30 @@
 				<input type="number" class="form-control" th:value="${comercial.comision}" readonly="readonly"/>
 			</div>
 		</div>
+	<h2 class="h4 mt-4 pb-2 border-bottom">Pedidos</h2>
+
+	<div th:if="${#lists.isEmpty(listaPedidos)}" class="alert alert-info">
+		Este comercial no tiene pedidos.
+	</div>
+
+	<div th:unless="${#lists.isEmpty(listaPedidos)}">
+		<div class="row fw-bold border-bottom py-2">
+			<div class="col-2">Id</div>
+			<div class="col-3">Fecha</div>
+			<div class="col-4">Cliente</div>
+			<div class="col-3 text-end">Total</div>
+		</div>
+		<div class="row py-2 border-bottom align-items-center" th:each="pedido : ${listaPedidos}">
+			<div class="col-2" th:text="${pedido.id}">1</div>
+			<div class="col-3" th:text="${pedido.fecha}">2017-10-05</div>
+			<div class="col-4">
+				<!-- el enlace abre el detalle del cliente en otra pestaña -->
+				<a th:href="@{/clientes/{id}(id=${pedido.clienteId})}" th:text="${pedido.clienteNombre}"
+					target="_blank" rel="noopener">Cliente</a>
+			</div>
+			<div class="col-3 text-end" th:text="${#numbers.formatDecimal(pedido.total, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>

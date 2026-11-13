@@ -114,4 +114,32 @@ public class ClienteDAOImpl implements ClienteDAO {
 		log.info("Delete de Cliente con {} registros eliminados.", rows);
 	}
 
+	/** Devuelve los Clientes cuya ciudad coincide con la dada. */
+	@Override
+	public List<Cliente> getAllByCiudad(String ciudad) {
+
+		List<Cliente> lista = jdbcTemplate.query(
+				"SELECT * FROM cliente WHERE ciudad = ?",
+				(rs, rowNum) -> new Cliente(rs.getInt("id"),
+						rs.getString("nombre"),
+						rs.getString("apellido1"),
+						rs.getString("apellido2"),
+						rs.getString("ciudad"),
+						rs.getInt("categoría")),
+				ciudad);
+
+		log.info("Devueltos {} registros de la ciudad {}.", lista.size(), ciudad);
+
+		return lista;
+	}
+
+	/** Devuelve las ciudades distintas (sin nulos), ordenadas alfabéticamente. */
+	@Override
+	public List<String> getCiudades() {
+
+		return jdbcTemplate.queryForList(
+				"SELECT DISTINCT ciudad FROM cliente WHERE ciudad IS NOT NULL ORDER BY ciudad",
+				String.class);
+	}
+
 }

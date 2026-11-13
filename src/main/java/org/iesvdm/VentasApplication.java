@@ -51,6 +51,10 @@ public class VentasApplication implements CommandLineRunner {
 
 		clienteDAO.getAll().forEach(c -> log.info("Cliente: {}", c));
 
+		log.info("--- clientes de Sevilla ---");
+		clienteDAO.getAllByCiudad("Sevilla").forEach(c -> log.info("Cliente: {}", c));
+		log.info("Ciudades: {}", clienteDAO.getCiudades());
+
 		int id = 1;
 		Optional<Cliente> cliente = clienteDAO.find(id);
 
@@ -157,6 +161,12 @@ public class VentasApplication implements CommandLineRunner {
 		// delete
 		pedidoDAO.delete(nuevo.getId());
 		log.info("Pedido {} tras delete: {}", nuevo.getId(), pedidoDAO.find(nuevo.getId()));
+
+		// pedidos de un comercial y de un cliente
+		log.info("--- pedidos del comercial 1 ---");
+		pedidoDAO.getAllByComercial(1).forEach(p -> log.info("Pedido: {}", p));
+		log.info("--- pedidos del cliente 1 ---");
+		pedidoDAO.getAllByCliente(1).forEach(p -> log.info("Pedido: {}", p));
 
 		log.info("Total pedidos tras pruebas: {}", pedidoDAO.getAll().size());
 	}

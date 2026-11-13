@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -37,11 +38,27 @@ public class ClienteController {
 		return "redirect:/clientes";
 	}
 
+	// /clientes  ->  todos
+	// /clientes?ciudad=Sevilla  ->  solo los de esa ciudad
 	@GetMapping("/clientes")
-	public String listar(Model model) {
+	public String listar(Model model, @RequestParam(required = false) String ciudad) {
 
-		List<Cliente> listaClientes = clienteService.listAll();
+		return listarPorCiudad(model, ciudad);
+	}
+
+	// /clientes/ciudad/Sevilla  ->  equivalente a /clientes?ciudad=Sevilla
+	@GetMapping("/clientes/ciudad/{ciudad}")
+	public String listarPorRuta(Model model, @PathVariable String ciudad) {
+
+		return listarPorCiudad(model, ciudad);
+	}
+
+	private String listarPorCiudad(Model model, String ciudad) {
+
+		List<Cliente> listaClientes = clienteService.listByCiudad(ciudad);
 		model.addAttribute("listaClientes", listaClientes);
+		model.addAttribute("listaCiudades", clienteService.listCiudades());
+		model.addAttribute("ciudadSeleccionada", ciudad == null ? "" : ciudad.trim());
 
 		return "clientes";
 	}
@@ -54,6 +71,7 @@ public class ClienteController {
 			return "redirect:/clientes";
 		}
 		model.addAttribute("cliente", cliente);
+		model.addAttribute("listaPedidos", clienteService.listPedidos(id));
 
 		return "detalle-cliente";
 	}
