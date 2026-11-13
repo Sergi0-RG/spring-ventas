@@ -3,9 +3,13 @@ package org.iesvdm.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.iesvdm.dao.ClienteComercialDAO;
 import org.iesvdm.dao.ClienteDAO;
 import org.iesvdm.dao.PedidoDAO;
+import org.iesvdm.dto.ComercialVinculadoDTO;
 import org.iesvdm.modelo.Cliente;
+import org.iesvdm.modelo.ClienteComercial;
+import org.iesvdm.modelo.Comercial;
 import org.iesvdm.modelo.PedidoDetalle;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +18,14 @@ public class ClienteService {
 
 	private final ClienteDAO clienteDAO;
 	private final PedidoDAO pedidoDAO;
+	private final ClienteComercialDAO clienteComercialDAO;
 
 	// Inyección por constructor: no hace falta @Autowired
-	public ClienteService(ClienteDAO clienteDAO, PedidoDAO pedidoDAO) {
+	public ClienteService(ClienteDAO clienteDAO, PedidoDAO pedidoDAO,
+			ClienteComercialDAO clienteComercialDAO) {
 		this.clienteDAO = clienteDAO;
 		this.pedidoDAO = pedidoDAO;
+		this.clienteComercialDAO = clienteComercialDAO;
 	}
 
 	public List<Cliente> listAll() {
@@ -59,6 +66,28 @@ public class ClienteService {
 	/** Ciudades distintas, para el desplegable del filtro. */
 	public List<String> listCiudades() {
 		return clienteDAO.getCiudades();
+	}
+
+	/** Comerciales vinculados al cliente (relación N:M), con fecha y prioridad. */
+	public List<ComercialVinculadoDTO> listComercialesVinculados(int id) {
+		return clienteComercialDAO.getAllByCliente(id);
+	}
+
+	/** Comerciales que todavía no están vinculados al cliente. */
+	public List<Comercial> listComercialesDisponibles(int id) {
+		return clienteComercialDAO.getDisponibles(id);
+	}
+
+	public boolean existsVinculo(int clienteId, int comercialId) {
+		return clienteComercialDAO.exists(clienteId, comercialId);
+	}
+
+	public void addComercial(ClienteComercial vinculo) {
+		clienteComercialDAO.create(vinculo);
+	}
+
+	public void removeComercial(int clienteId, int comercialId) {
+		clienteComercialDAO.delete(clienteId, comercialId);
 	}
 
 }

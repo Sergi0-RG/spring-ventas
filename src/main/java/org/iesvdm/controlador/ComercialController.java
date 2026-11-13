@@ -103,8 +103,8 @@ public class ComercialController {
 			comercialService.deleteComercial(id);
 			ra.addFlashAttribute("mensaje", "Comercial eliminado correctamente.");
 		} catch (DataIntegrityViolationException e) {
-			// el comercial tiene pedidos asociados (clave foránea)
-			ra.addFlashAttribute("error", "No se puede eliminar el comercial porque tiene pedidos asociados.");
+			// el comercial tiene pedidos o clientes asociados (clave foránea)
+			ra.addFlashAttribute("error", "No se puede eliminar el comercial porque tiene pedidos o clientes asociados.");
 		}
 
 		return "redirect:/comerciales";

@@ -18,6 +18,12 @@
 	</div>
 </nav>
 <div class="container">
+	<div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}">Mensaje</div>
+	<div th:if="${errores}" class="alert alert-danger" role="alert">
+		<ul class="mb-0">
+			<li th:each="e : ${errores}" th:text="${e}">Error</li>
+		</ul>
+	</div>
 	<form th:action="@{/clientes/editar/__${cliente.id}__}" th:object="${cliente}" method="post">
 		<div class="row align-items-center border-bottom py-3 mb-3">
 			<div class="col-6">
@@ -65,6 +71,72 @@
 			</div>
 		</div>
 	</form>
+
+	<!-- Segundo formulario, aparte del de Cliente: vincular comerciales (relación N:M) -->
+	<h2 class="h4 mt-5 pb-2 border-bottom">Añadir comercial</h2>
+
+	<div th:if="${#lists.isEmpty(listaComercialesDisponibles)}" class="alert alert-info">
+		No quedan comerciales por añadir a este cliente.
+	</div>
+
+	<form th:unless="${#lists.isEmpty(listaComercialesDisponibles)}"
+		th:action="@{/clientes/editar/__${cliente.id}__/comerciales/anadir}" th:object="${vinculo}" method="post">
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label">Comercial</label>
+			<div class="col-md-6">
+				<select class="form-select" th:field="*{comercialId}" required>
+					<option value="">-- Selecciona un comercial --</option>
+					<option th:each="co : ${listaComercialesDisponibles}" th:value="${co.id}"
+						th:text="${co.nombreCompleto}">Comercial</option>
+				</select>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label">Fecha</label>
+			<div class="col-md-6">
+				<input type="date" class="form-control" th:field="*{fecha}" required/>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label">Prioridad</label>
+			<div class="col-md-6">
+				<input type="number" class="form-control" th:field="*{prioridad}" step="1" min="1" required/>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-md-6 offset-md-3">
+				<button class="btn btn-success" type="submit">Añadir Comercial</button>
+			</div>
+		</div>
+	</form>
+
+	<!-- Listado de comerciales vinculados al cliente -->
+	<h2 class="h4 mt-4 pb-2 border-bottom">Comerciales del cliente</h2>
+
+	<div th:if="${#lists.isEmpty(listaComercialesVinculados)}" class="alert alert-info">
+		Este cliente no tiene comerciales vinculados.
+	</div>
+
+	<div th:unless="${#lists.isEmpty(listaComercialesVinculados)}">
+		<div class="row fw-bold border-bottom py-2">
+			<div class="col-5">Comercial</div>
+			<div class="col-2">Fecha</div>
+			<div class="col-2">Prioridad</div>
+			<div class="col-3 text-center">Acción</div>
+		</div>
+		<div class="row py-2 border-bottom align-items-center" th:each="v : ${listaComercialesVinculados}">
+			<div class="col-5" th:text="${v.comercialNombre}">Comercial</div>
+			<div class="col-2" th:text="${v.fecha}">2024-01-15</div>
+			<div class="col-2" th:text="${v.prioridad}">1</div>
+			<div class="col-3 text-center">
+				<form th:action="@{/clientes/editar/__${cliente.id}__/comerciales/borrar/__${v.comercialId}__}"
+					method="post" class="d-inline"
+					onsubmit="return confirm('¿Quitar este comercial del cliente?');">
+					<button class="btn btn-danger btn-sm" type="submit">Borrar</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
