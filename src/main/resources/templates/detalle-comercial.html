@@ -56,6 +56,30 @@
 				<input type="number" class="form-control" th:value="${comercial.comision}" readonly="readonly"/>
 			</div>
 		</div>
+
+	<!-- Estadísticas de pedidos (DTO ComercialEstadisticasDTO) -->
+	<h2 class="h4 mt-4 pb-2 border-bottom">Estadísticas de pedidos</h2>
+	<div class="row text-center mb-3">
+		<div class="col-md-4 mb-2">
+			<div class="border rounded p-2">
+				<div class="text-muted small">Nº de pedidos</div>
+				<div class="fs-4" th:text="${estadisticas.numPedidos}">0</div>
+			</div>
+		</div>
+		<div class="col-md-4 mb-2">
+			<div class="border rounded p-2">
+				<div class="text-muted small">Total de pedidos</div>
+				<div class="fs-4" th:text="${#numbers.formatDecimal(estadisticas.total, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+			</div>
+		</div>
+		<div class="col-md-4 mb-2">
+			<div class="border rounded p-2">
+				<div class="text-muted small">Media por pedido</div>
+				<div class="fs-4" th:text="${#numbers.formatDecimal(estadisticas.media, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+			</div>
+		</div>
+	</div>
+
 	<h2 class="h4 mt-4 pb-2 border-bottom">Pedidos</h2>
 
 	<div th:if="${#lists.isEmpty(listaPedidos)}" class="alert alert-info">
@@ -63,13 +87,23 @@
 	</div>
 
 	<div th:unless="${#lists.isEmpty(listaPedidos)}">
+		<!-- Leyenda de colores -->
+		<div class="small mb-2">
+			<span class="d-inline-block border bg-success-subtle align-middle me-1" style="width: 1rem; height: 1rem;"></span>
+			Pedido de mayor importe (<span th:text="${#numbers.formatDecimal(estadisticas.maximo, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</span>)
+			<span class="d-inline-block border bg-warning-subtle align-middle ms-3 me-1" style="width: 1rem; height: 1rem;"></span>
+			Pedido de menor importe (<span th:text="${#numbers.formatDecimal(estadisticas.minimo, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</span>)
+		</div>
+
 		<div class="row fw-bold border-bottom py-2">
 			<div class="col-2">Id</div>
 			<div class="col-3">Fecha</div>
 			<div class="col-4">Cliente</div>
 			<div class="col-3 text-end">Total</div>
 		</div>
-		<div class="row py-2 border-bottom align-items-center" th:each="pedido : ${listaPedidos}">
+		<!-- verde: pedido máximo; amarillo: pedido mínimo -->
+		<div class="row py-2 border-bottom align-items-center" th:each="pedido : ${listaPedidos}"
+			th:classappend="${pedido.total == estadisticas.maximo ? 'bg-success-subtle' : (pedido.total == estadisticas.minimo ? 'bg-warning-subtle' : '')}">
 			<div class="col-2" th:text="${pedido.id}">1</div>
 			<div class="col-3" th:text="${pedido.fecha}">2017-10-05</div>
 			<div class="col-4">
@@ -78,6 +112,30 @@
 					target="_blank" rel="noopener">Cliente</a>
 			</div>
 			<div class="col-3 text-end" th:text="${#numbers.formatDecimal(pedido.total, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+		</div>
+	</div>
+
+	<!-- Clientes del comercial ordenados por el total de todos sus pedidos (DTO ClienteTotalDTO) -->
+	<h2 class="h4 mt-4 pb-2 border-bottom">Clientes por importe total</h2>
+	<p class="small text-muted">Ordenados de mayor a menor por el total de todos sus pedidos.</p>
+
+	<div th:if="${#lists.isEmpty(listaClientesTotal)}" class="alert alert-info">
+		Este comercial no tiene clientes.
+	</div>
+
+	<div th:unless="${#lists.isEmpty(listaClientesTotal)}">
+		<div class="row fw-bold border-bottom py-2">
+			<div class="col-5">Cliente</div>
+			<div class="col-3 text-end">Total con este comercial</div>
+			<div class="col-4 text-end">Total de todos sus pedidos</div>
+		</div>
+		<div class="row py-2 border-bottom align-items-center" th:each="c : ${listaClientesTotal}">
+			<div class="col-5">
+				<a th:href="@{/clientes/{id}(id=${c.clienteId})}" th:text="${c.clienteNombre}"
+					target="_blank" rel="noopener">Cliente</a>
+			</div>
+			<div class="col-3 text-end" th:text="${#numbers.formatDecimal(c.totalConComercial, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
+			<div class="col-4 text-end" th:text="${#numbers.formatDecimal(c.totalCliente, 1, 'POINT', 2, 'COMMA')} + ' €'">0,00 €</div>
 		</div>
 	</div>
 </div>

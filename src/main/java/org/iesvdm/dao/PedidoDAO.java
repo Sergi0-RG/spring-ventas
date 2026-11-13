@@ -3,6 +3,7 @@ package org.iesvdm.dao;
 import java.util.List;
 import java.util.Optional;
 
+import org.iesvdm.dto.ClienteTotalDTO;
 import org.iesvdm.modelo.Pedido;
 import org.iesvdm.modelo.PedidoDetalle;
 
@@ -27,5 +28,8 @@ public interface PedidoDAO {
 	public List<PedidoDetalle> getAllByComercial(int idComercial);
 
 	public List<PedidoDetalle> getAllByCliente(int idCliente);
+
+	// Clientes de un comercial con sus importes totales, de mayor a menor
+	public List<ClienteTotalDTO> getClientesTotalByComercial(int idComercial);
 
 }

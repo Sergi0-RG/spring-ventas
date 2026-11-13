@@ -50,6 +50,8 @@ public class ComercialController {
 		}
 		model.addAttribute("comercial", comercial);
 		model.addAttribute("listaPedidos", comercialService.listPedidos(id));
+		model.addAttribute("estadisticas", comercialService.estadisticas(id));
+		model.addAttribute("listaClientesTotal", comercialService.listClientesPorTotal(id));
 
 		return "detalle-comercial";
 	}

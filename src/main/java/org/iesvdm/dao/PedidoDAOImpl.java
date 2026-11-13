@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.iesvdm.dto.ClienteTotalDTO;
 import org.iesvdm.modelo.Pedido;
 import org.iesvdm.modelo.PedidoDetalle;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +189,35 @@ public class PedidoDAOImpl implements PedidoDAO {
 				idCliente);
 
 		log.info("Devueltos {} pedidos del cliente {}.", lista.size(), idCliente);
+
+		return lista;
+	}
+
+	/**
+	 * Clientes que han hecho pedidos con el comercial dado, ordenados de mayor a
+	 * menor por el total de todos sus pedidos.
+	 */
+	@Override
+	public List<ClienteTotalDTO> getClientesTotalByComercial(int idComercial) {
+
+		List<ClienteTotalDTO> lista = jdbcTemplate.query("""
+				SELECT c.id,
+					CONCAT_WS(' ', c.nombre, c.apellido1, c.apellido2) AS cliente,
+					SUM(CASE WHEN p.id_comercial = ? THEN p.total ELSE 0 END) AS total_comercial,
+					SUM(p.total) AS total_cliente
+				FROM cliente c
+				JOIN pedido p ON p.id_cliente = c.id
+				WHERE c.id IN (SELECT id_cliente FROM pedido WHERE id_comercial = ?)
+				GROUP BY c.id, c.nombre, c.apellido1, c.apellido2
+				ORDER BY total_cliente DESC, c.id
+				""",
+				(rs, rowNum) -> new ClienteTotalDTO(rs.getInt("id"),
+						rs.getString("cliente"),
+						rs.getDouble("total_comercial"),
+						rs.getDouble("total_cliente")),
+				idComercial, idComercial);
+
+		log.info("Devueltos {} clientes del comercial {}.", lista.size(), idComercial);
 
 		return lista;
 	}

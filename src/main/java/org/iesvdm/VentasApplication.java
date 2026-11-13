@@ -165,6 +165,8 @@ public class VentasApplication implements CommandLineRunner {
 		// pedidos de un comercial y de un cliente
 		log.info("--- pedidos del comercial 1 ---");
 		pedidoDAO.getAllByComercial(1).forEach(p -> log.info("Pedido: {}", p));
+		log.info("--- clientes del comercial 1 por total ---");
+		pedidoDAO.getClientesTotalByComercial(1).forEach(c -> log.info("ClienteTotal: {}", c));
 		log.info("--- pedidos del cliente 1 ---");
 		pedidoDAO.getAllByCliente(1).forEach(p -> log.info("Pedido: {}", p));
 
